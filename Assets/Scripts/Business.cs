@@ -17,6 +17,9 @@ public class Business : MonoBehaviour
     public Text secondImprovementMultiplierText;
     public Text secondImprovementPriceText;
 
+    public Slider progressBar;
+
+    // Performance
     [SerializeField]
     private int businessID;
     [SerializeField]
