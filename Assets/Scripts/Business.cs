@@ -23,23 +23,125 @@ public class Business : MonoBehaviour
     [SerializeField]
     private int businessID;
     [SerializeField]
+    private int level;
+    [SerializeField]
     private BusinessData businessData;
     [SerializeField]
     private BusinessNames businessNames;
 
     private string businessName;
-    private int level;
     private int price;
-    private int revenue;
+    private float revenue;    
     private int incomeDelay;
 
-    private Improvement firstImprovement;
+    private bool isBusinessWorking;
 
-    private Improvement secondImprovement;
+    
+    private float timerStart;
+    [HideInInspector]
+    public float timer;
+    [HideInInspector]
+    public float timerEnd;
+
+    private double multiplierPercent;
+
+    [HideInInspector]
+    public Improvement firstImprovement;
+    [HideInInspector]
+    public Improvement secondImprovement;
+
+    public void Checkcing()
+    {
+        if(level > 0)
+        {
+            isBusinessWorking = true;
+        }
+        if(firstImprovement.IsBought())
+        {
+            firstImprovementPriceText.text = $"Куплено";
+            multiplierPercent += firstImprovement.GetMultiplier();
+            Revenue();
+        }
+        if (secondImprovement.IsBought())
+        {
+            secondImprovementPriceText.text = $"Куплено";
+            multiplierPercent += secondImprovement.GetMultiplier();
+            Revenue();
+        }
+    }
+
+    public float GetRevenue()
+    {
+        return revenue;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+    public void SetLevel(int level)
+    {
+        this.level = level;
+        levelText.text = $"Level\n{level}";
+        price = (level + 1) * businessData.Price;
+        levelUpPriceText.text = $"Level up\nPrice: {price}$";
+        Revenue();
+    }
+    public void BusinessLevelUp()
+    {        
+        if(Money.Lose(price))
+        {
+            if (level == 0)
+            {
+                isBusinessWorking = true;
+                TimerStart();
+            }
+            level++;
+            levelText.text = $"Level\n{level}";
+            price = (level + 1) * businessData.Price;
+            levelUpPriceText.text = $"Level up\nPrice: {price}$";
+            Revenue();
+        }
+    }
+
+    public void BuyImprovement(int index)
+    {
+        if (index == 1)
+        {
+            if(!firstImprovement.IsBought())
+            {
+                if(Money.Lose(firstImprovement.GetPrice()))
+                {
+                    firstImprovement.Buying();
+                    firstImprovementPriceText.text = $"Куплено";
+                    multiplierPercent += firstImprovement.GetMultiplier();
+                    Revenue();
+                }
+            }
+        }
+        if (index == 2)
+        {
+            if (!secondImprovement.IsBought())
+            {
+                if(Money.Lose(secondImprovement.GetPrice()))
+                {
+                    secondImprovement.Buying();
+                    secondImprovementPriceText.text = $"Куплено";
+                    multiplierPercent += secondImprovement.GetMultiplier();
+                    Revenue();
+                }
+            }
+        }
+    }
 
     private void Awake()
     {
         Initialization();
+    }
+
+    private void Update()
+    {
+        Timer();
     }
 
     private void Initialization()
@@ -48,6 +150,8 @@ public class Business : MonoBehaviour
         price = businessData.Price;
         revenue = businessData.Revenue;
         incomeDelay = businessData.IncomeDelay;
+
+        isBusinessWorking = level > 0;
 
         firstImprovement = new Improvement();
         firstImprovement.SetName(businessNames.FirstImprovementName(businessID));
@@ -59,21 +163,60 @@ public class Business : MonoBehaviour
         secondImprovement.SetPrice(businessData.SecondImprovementPrice);
         secondImprovement.SetMultiplier(businessData.SecondImprovementMultiplier);
         UIInitialization();
+        TimerStart();
     }
 
     private void UIInitialization()
     {
-        businessNameText.text = businessName;
-        levelText.text = level.ToString();
-        revenueText.text = revenue.ToString();
-        levelUpPriceText.text = price.ToString();
+        businessNameText.text = $"{businessName}";
+        levelText.text = $"Level\n{level}";
+        Revenue();
+        levelUpPriceText.text = $"Level up\nPrice: {price}$";
 
-        firstImprovementNameText.text = firstImprovement.GetName();
-        firstImprovementMultiplierText.text = firstImprovement.GetMultiplier().ToString();
-        firstImprovementPriceText.text = firstImprovement.GetPrice().ToString();
+        firstImprovementNameText.text = $"{firstImprovement.GetName()}";
+        firstImprovementMultiplierText.text = $"Multiplier: + {firstImprovement.GetMultiplier()}%";
+        firstImprovementPriceText.text = $"Price: {firstImprovement.GetPrice()}$";
 
-        secondImprovementNameText.text = secondImprovement.GetName();
-        secondImprovementMultiplierText.text = secondImprovement.GetMultiplier().ToString();
-        secondImprovementPriceText.text = secondImprovement.GetPrice().ToString();
+        secondImprovementNameText.text = $"{secondImprovement.GetName()}";
+        secondImprovementMultiplierText.text = $"Multiplier: + {secondImprovement.GetMultiplier()}%";
+        secondImprovementPriceText.text = $"Price: {secondImprovement.GetPrice()}$";
+    }
+
+    private void TimerStart()
+    {
+        timerStart = 0;
+        timerEnd = incomeDelay;
+        timer = timerStart;
+        progressBar.maxValue = timerEnd;
+        progressBar.value = timer;
+    }
+
+    private void Timer()
+    {
+        if (isBusinessWorking)
+        {
+            if(timer <= timerEnd)
+            {
+                timer += Time.deltaTime;
+                progressBar.value = timer;
+            }
+            else
+            {
+                TimerStart();
+                Profit();
+            }
+        }
+    }
+
+    private void Profit()
+    {
+        Revenue();
+        Money.Income(revenue);
+    }
+
+    private void Revenue()
+    {
+        revenue = (((float)multiplierPercent / 100) + 1) * (level * businessData.Revenue);
+        revenueText.text = $"Revenue\n{revenue}$";
     }
 }

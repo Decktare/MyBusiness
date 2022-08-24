@@ -10,6 +10,11 @@ public class Improvement
         isBought = true;
     }
 
+    public void SetIsBought(bool value)
+    {
+        isBought = value;
+    }
+
     public void SetName(string name)
     {
         improvementName = name;
