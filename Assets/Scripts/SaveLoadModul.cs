@@ -13,9 +13,9 @@ public class SaveLoadModul : MonoBehaviour
     private SaveEco SaveEco = new SaveEco();
     private SaveDate SaveDate = new SaveDate();
 
-    public static string pathBusiness;
-    public static string pathEco;
-    public static string pathDate;
+    private string pathBusiness;
+    private string pathEco;
+    private string pathDate;
 
     public void Save()
     {
@@ -49,7 +49,7 @@ public class SaveLoadModul : MonoBehaviour
                 business.SetLevel(SaveBusiness.levels.ElementAt(businessList.IndexOf(business)));
                 business.firstImprovement.SetIsBought(SaveBusiness.firstImprovementBought.ElementAt(businessList.IndexOf(business)));
                 business.secondImprovement.SetIsBought(SaveBusiness.secondImprovementBought.ElementAt(businessList.IndexOf(business)));
-                business.Checkcing();
+                business.Checking();
             }
         }
         if (File.Exists(pathEco))
@@ -88,15 +88,9 @@ public class SaveLoadModul : MonoBehaviour
 
     private void Awake()
     {
-#if UNITY_ANDROID && !UNITY_EDITOR
         pathBusiness = Path.Combine(Application.persistentDataPath, "Business.json");
         pathEco = Path.Combine(Application.persistentDataPath, "Eco.json");
         pathDate = Path.Combine(Application.persistentDataPath, "Date.json");
-#else
-        pathBusiness = Path.Combine(Application.dataPath, "Business.json");
-        pathEco = Path.Combine(Application.dataPath, "Eco.json");
-        pathDate = Path.Combine(Application.dataPath, "Date.json");
-#endif
     }
 #if UNITY_ANDROID && !UNITY_EDITOR
     private void OnApplicationPause (bool pause)

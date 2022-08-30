@@ -4,20 +4,31 @@ using UnityEngine.UI;
 public class Business : MonoBehaviour
 {
     // UI
-    public Text businessNameText;
-    public Text levelText;
-    public Text revenueText;
-    public Text levelUpPriceText;
+    [SerializeField]
+    private Text businessNameText;
+    [SerializeField]
+    private Text levelText;
+    [SerializeField]
+    private Text revenueText;
+    [SerializeField]
+    private Text levelUpPriceText;
 
-    public Text firstImprovementNameText;
-    public Text firstImprovementMultiplierText;
-    public Text firstImprovementPriceText;
+    [SerializeField]
+    private Text firstImprovementNameText;
+    [SerializeField]
+    private Text firstImprovementMultiplierText;
+    [SerializeField]
+    private Text firstImprovementPriceText;
 
-    public Text secondImprovementNameText;
-    public Text secondImprovementMultiplierText;
-    public Text secondImprovementPriceText;
+    [SerializeField]
+    private Text secondImprovementNameText;
+    [SerializeField]
+    private Text secondImprovementMultiplierText;
+    [SerializeField]
+    private Text secondImprovementPriceText;
 
-    public Slider progressBar;
+    [SerializeField]
+    private Slider progressBar;
 
     // Performance
     [SerializeField]
@@ -50,7 +61,7 @@ public class Business : MonoBehaviour
     [HideInInspector]
     public Improvement secondImprovement;
 
-    public void Checkcing()
+    public void Checking()
     {
         if(level > 0)
         {
